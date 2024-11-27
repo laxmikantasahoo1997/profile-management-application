@@ -5,7 +5,6 @@ import * as Yup from "yup";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useProfile } from "../context/ProfileContext";
 import { api } from "../utils/api";
-import type { Profile } from "../utils/api"; // Import Profile type
 
 interface ProfileFormValues {
   name: string;

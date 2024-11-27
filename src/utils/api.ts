@@ -21,6 +21,7 @@ export const api = {
     return new Promise<Profile>((resolve, reject) => {
       setTimeout(() => {
         const profiles = getProfilesFromLocalStorage();
+        console.log(reject);
         const existingIndex = profiles.findIndex(
           (p) => p.email === profile.email
         );
