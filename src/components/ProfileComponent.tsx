@@ -1,6 +1,4 @@
-// Profile.tsx
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   Box,
   Typography,
@@ -11,9 +9,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { api } from "../utils/api";
-import type { Profile } from "../utils/api"; // Import only as type
+import type { Profile } from "../utils/api";
 
-// Rename component to avoid conflict with Profile type
 export const ProfileComponent: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [feedback, setFeedback] = useState<{
@@ -37,6 +34,11 @@ export const ProfileComponent: React.FC = () => {
 
     loadProfiles();
   }, []);
+
+  // UseMemo to compute sorted profiles
+  const sortedProfiles = useMemo(() => {
+    return [...profiles].sort((a, b) => a.name.localeCompare(b.name));
+  }, [profiles]);
 
   const handleDelete = async (email: string) => {
     try {
@@ -71,7 +73,7 @@ export const ProfileComponent: React.FC = () => {
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h6">Profile Details</Typography>
-      {profiles.map((profile) => (
+      {sortedProfiles.map((profile) => (
         <Box key={profile.email} sx={{ mb: 2 }}>
           <Typography>Name: {profile.name}</Typography>
           <Typography>Email: {profile.email}</Typography>

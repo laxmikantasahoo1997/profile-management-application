@@ -1,66 +1,41 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { TextField, Button, Box, Snackbar, Alert } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useProfile } from "../context/ProfileContext";
 import { api } from "../utils/api";
+import type { Profile } from "../utils/api";
 
-interface ProfileFormValues {
-  name: string;
-  email: string;
-  age: string; // Formik treats all input values as strings
-}
 export const Form: React.FC = () => {
   const { setProfile } = useProfile();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [feedback, setFeedback] = useState<{
     message: string;
     severity: "success" | "error";
   } | null>(null);
-  const [profileToEdit, setProfileToEdit] = useState<ProfileFormValues | null>(
-    null
-  );
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [profileToEdit, setProfileToEdit] = useState<Profile | null>(null);
 
-  // Extract email from the query parameters in the URL (e.g. /profile-form?email=email@example.com)
+  // Fetch profile to edit (if email is in query string)
   useEffect(() => {
     const emailToEdit = new URLSearchParams(location.search).get("email");
     if (emailToEdit) {
       api
         .fetchProfile(emailToEdit)
-        .then((profile) => {
-          setProfileToEdit({
-            name: profile.name,
-            email: profile.email,
-            age: profile.age?.toString() || "", // Convert age to string for the form
-          });
-        })
-        .catch((error) => {
-          setFeedback({ message: error.message, severity: "error" });
-        });
+        .then((profile) => setProfileToEdit(profile))
+        .catch((error) =>
+          setFeedback({ message: error.message, severity: "error" })
+        );
     }
-  }, [location.search]); // Only re-run when the location changes (email parameter changes)
+  }, [location.search]);
 
-  const formik = useFormik<ProfileFormValues>({
-    initialValues: { name: "", email: "", age: "" },
-    validationSchema: Yup.object({
-      name: Yup.string()
-        .required("Name is required")
-        .min(3, "Name must be at least 3 characters"),
-      email: Yup.string().email("Invalid email").required("Email is required"),
-      age: Yup.string()
-        .optional()
-        .test("is-valid-age", "Age must be a number", (value) => {
-          if (!value) return true; // Age is optional
-          const num = Number(value);
-          return !isNaN(num) && num >= 0;
-        }),
-    }),
-    onSubmit: async (values) => {
+  // Memoize the handleSubmit function using useCallback
+  const handleSubmit = useCallback(
+    async (values: { name: string; email: string; age: string }) => {
       const formattedValues = {
         ...values,
-        age: values.age ? Number(values.age) : undefined, // Convert age to number
+        age: values.age ? Number(values.age) : undefined, // Convert age to a number
       };
 
       try {
@@ -75,14 +50,34 @@ export const Form: React.FC = () => {
         setFeedback({ message: error.message, severity: "error" });
       }
     },
-  });
+    [setProfile, navigate]
+  );
 
-  // Pre-fill form fields with profileToEdit data, but only if it's changed
-  useEffect(() => {
-    if (profileToEdit && !formik.values.email) {
-      formik.setValues(profileToEdit);
-    }
-  }, [profileToEdit, formik]);
+  const formik = useFormik({
+    // Transform `profileToEdit` to match Formik's initialValues type
+    initialValues: profileToEdit
+      ? {
+          name: profileToEdit.name,
+          email: profileToEdit.email,
+          age: profileToEdit.age?.toString() || "", // Convert `number | undefined` to `string`
+        }
+      : { name: "", email: "", age: "" }, // Default values for new profile
+    enableReinitialize: true, // Allow reinitialization when profileToEdit changes
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .required("Name is required")
+        .min(3, "At least 3 characters"),
+      email: Yup.string().email("Invalid email").required("Email is required"),
+      age: Yup.string()
+        .optional()
+        .test("is-valid-age", "Age must be a number", (value) => {
+          if (!value) return true;
+          const num = Number(value);
+          return !isNaN(num) && num >= 0;
+        }),
+    }),
+    onSubmit: handleSubmit, // Use the memoized function here
+  });
 
   return (
     <Box
@@ -106,7 +101,6 @@ export const Form: React.FC = () => {
         error={formik.touched.email && Boolean(formik.errors.email)}
         helperText={formik.touched.email && formik.errors.email}
       />
-
       <TextField
         fullWidth
         margin="normal"
