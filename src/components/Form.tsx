@@ -11,7 +11,6 @@ interface ProfileFormValues {
   email: string;
   age: string; // Formik treats all input values as strings
 }
-
 export const Form: React.FC = () => {
   const { setProfile } = useProfile();
   const [feedback, setFeedback] = useState<{
