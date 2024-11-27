@@ -1,7 +1,14 @@
 // Profile.tsx
 
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Button, Snackbar, Alert } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Snackbar,
+  Alert,
+  Skeleton,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { api } from "../utils/api";
 import type { Profile } from "../utils/api"; // Import only as type
@@ -44,7 +51,14 @@ export const ProfileComponent: React.FC = () => {
     }
   };
 
-  if (loading) return <Typography>Loading...</Typography>;
+  if (loading)
+    return (
+      <>
+        <Skeleton variant="rectangular" height={100} sx={{ m: 1 }} />
+        <Skeleton variant="rectangular" height={100} sx={{ m: 1 }} />
+        <Skeleton variant="rectangular" height={100} sx={{ m: 1 }} />
+      </>
+    );
 
   if (!profiles.length) {
     return (
