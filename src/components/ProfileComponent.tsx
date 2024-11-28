@@ -73,7 +73,9 @@ export const ProfileComponent: React.FC = () => {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h6">Profile Details</Typography>
+      <Typography variant="h6" fontWeight={"bold"}>
+        Profile Details
+      </Typography>
       {sortedProfiles.map((profile) => (
         <Box key={profile.email} sx={{ mb: 2 }}>
           <Typography>Name: {profile.name}</Typography>

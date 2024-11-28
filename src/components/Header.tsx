@@ -12,7 +12,9 @@ export const Header: React.FC = () => {
 
   return (
     <AppBar position="static">
-      <Toolbar sx={{ justifyContent: "space-between" }}>
+      <Toolbar
+        sx={{ justifyContent: "space-between", backgroundColor: "#0074ff" }}
+      >
         {/* Logo and Title */}
         <Box
           sx={{
@@ -29,7 +31,9 @@ export const Header: React.FC = () => {
             style={{ width: "40px", height: "40px" }}
           />
           {!isMobile && ( // Hide text on mobile screens
-            <Typography variant="h6">Profile Management</Typography>
+            <Typography variant="h6" fontWeight={"bold"}>
+              Profile Management
+            </Typography>
           )}
         </Box>
 
@@ -48,10 +52,7 @@ export const Header: React.FC = () => {
             sx={{
               borderRadius: "20px", // Rounded button
               padding: isMobile ? "6px 12px" : "8px 16px", // Compact padding for mobile
-              backgroundColor: "primary.main",
-              "&:hover": {
-                backgroundColor: "primary.dark", // Hover effect
-              },
+              backgroundColor: "#59a1f7",
               textTransform: "capitalize", // Prevent all-uppercase text
             }}
           >
@@ -65,10 +66,7 @@ export const Header: React.FC = () => {
             sx={{
               borderRadius: "20px",
               padding: isMobile ? "6px 12px" : "8px 16px",
-              backgroundColor: "secondary.main",
-              "&:hover": {
-                backgroundColor: "secondary.dark",
-              },
+              backgroundColor: "#59a1f7",
               textTransform: "capitalize",
             }}
           >
