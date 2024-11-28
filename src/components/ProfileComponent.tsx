@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { api } from "../utils/api";
 import type { Profile } from "../utils/api";
+import { Edit, Delete } from "@mui/icons-material";
 
 export const ProfileComponent: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -77,12 +78,14 @@ export const ProfileComponent: React.FC = () => {
         <Box key={profile.email} sx={{ mb: 2 }}>
           <Typography>Name: {profile.name}</Typography>
           <Typography>Email: {profile.email}</Typography>
-          <Typography>Age: {profile.age || "N/A"}</Typography>
+          {profile.age && <Typography>Age: {profile.age}</Typography>}
           <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
             <Button
               variant="outlined"
               color="primary"
               onClick={() => navigate(`/profile-form?email=${profile.email}`)}
+              sx={{ textTransform: "capitalize" }}
+              startIcon={<Edit />}
             >
               Edit Profile
             </Button>
@@ -90,6 +93,8 @@ export const ProfileComponent: React.FC = () => {
               variant="outlined"
               color="error"
               onClick={() => handleDelete(profile.email)}
+              sx={{ textTransform: "capitalize" }}
+              startIcon={<Delete />}
             >
               Delete Profile
             </Button>

@@ -18,6 +18,7 @@ export const Home: React.FC = () => {
           variant="contained"
           color="primary"
           onClick={() => navigate("/profile-form")}
+          sx={{ textTransform: "capitalize" }}
         >
           Create/Update Profile
         </Button>
@@ -25,6 +26,7 @@ export const Home: React.FC = () => {
           variant="outlined"
           color="secondary"
           onClick={() => navigate("/profile")}
+          sx={{ textTransform: "capitalize" }}
         >
           View Profile
         </Button>

@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { TextField, Button, Box, Snackbar, Alert } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Snackbar,
+  Alert,
+  Typography,
+} from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -79,16 +86,33 @@ export const Form: React.FC = () => {
     onSubmit: handleSubmit, // Use the memoized function here
   });
 
+  // Disable button logic
+  const isButtonDisabled = profileToEdit
+    ? JSON.stringify(formik.values) ===
+      JSON.stringify({
+        name: profileToEdit.name,
+        email: profileToEdit.email,
+        age: profileToEdit.age?.toString() || "",
+      }) // Disable if values are unchanged
+    : !(formik.isValid && formik.dirty); // Disable for new profile if form is incomplete
+
   return (
     <Box
       component="form"
       onSubmit={formik.handleSubmit}
       sx={{ maxWidth: 400, mx: "auto", mt: 5 }}
     >
+      {/* Dynamic Heading */}
+      <Typography variant="h5" sx={{ textAlign: "center", mb: 3 }}>
+        {profileToEdit ? "Update Profile" : "Create Profile"}
+      </Typography>
+
+      {/* Form Fields */}
       <TextField
         fullWidth
         margin="normal"
         label="Name"
+        autoFocus={!profileToEdit} // Auto-focus only for new profile
         {...formik.getFieldProps("name")}
         error={formik.touched.name && Boolean(formik.errors.name)}
         helperText={formik.touched.name && formik.errors.name}
@@ -110,9 +134,18 @@ export const Form: React.FC = () => {
         error={formik.touched.age && Boolean(formik.errors.age)}
         helperText={formik.touched.age && formik.errors.age}
       />
-      <Button fullWidth variant="contained" color="primary" type="submit">
+      <Button
+        fullWidth
+        variant="contained"
+        color="primary"
+        type="submit"
+        disabled={isButtonDisabled} // Disable logic
+        sx={{ textTransform: "capitalize" }}
+      >
         {profileToEdit ? "Update" : "Save"}
       </Button>
+
+      {/* Feedback Snackbar */}
       {feedback && (
         <Snackbar
           open
